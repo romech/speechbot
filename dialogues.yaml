@@ -1,0 +1,54 @@
+undefined:
+  - 'Wat?'
+  - 'Я не понимаю('
+
+greeting: 'Привет, $username!'
+
+newcomer-help:
+  - >
+    Привет, $username!
+    Моя работа - подменять голос аудиозаписи.
+
+choose-voice: 'Выбери персонажа:'
+changed-voice: 'Голос изменён! Теперь отправь мне аудио-сообщение.'
+
+loading:
+  - 'Так, что тут у нас... Падажжи...'
+  - 'Минуточку...'
+  - 'Один момент...'
+  - 'Gotcha! Обрабатываем...'
+  - '...'
+  - 'Теперь немного терпения...'
+  - 'Сейчас всё по-красоте сделаем'
+
+ddos:
+  - 'Так, падажжи, слишком много запросов'
+  - 'Пожалейте наш сервер, не так быстро!'
+
+failed-voice-download: >
+  Не удалось загрузить голосовушку :(
+  Попробуем заново?
+
+failed-server-request:
+  - >
+    Сервер не отвечает D:
+    Может быть, он в порядке, но дайте ему время отдохнуть.
+  - 'Сервер временно не отвечает. Сорян!'
+  - 'AI устал. Повторим попытку позднее.'
+
+thank-for-sticker: 'Спасибо, схоронил'
+
+keyboards:
+  choose-voice:
+    - Trump
+    - Female
+
+stickers:
+  trump:
+    - 'CAADAgADIQADzexpDYAd5EYVHC6xAg'
+    - 'CAADAgADIgADzexpDcQt-hMrI1MOAg'
+    - 'CAADAgADIwADzexpDUKnrSqqC59MAg'
+    - 'CAADAgADMAADzexpDSquhKJBnW4HAg'
+
+  trump-ttl:
+    - 'CAADAgADKgADzexpDcukFyd6mZzdAg'
