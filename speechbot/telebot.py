@@ -1,5 +1,6 @@
 import random
 import tempfile
+import time
 
 import requests
 import telebot
@@ -12,13 +13,20 @@ from speechbot.utils import *
 
 connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
 
-# connect-keys.yaml
+# connect-keys.yaml file
 #
 # connection:
 #   token: 'T0KEИ'
 #   proxy:
 #     https: 'socks5://uid:pwd@host:port'
-
+#
+# endpoints:
+#   Trump: 'http://host/voice1'
+#   Robot: 'http://host/voice2'
+#   ...
+#
+# duration-limit: 300
+#
 
 apihelper.proxy = connection_settings['proxy']
 
@@ -27,6 +35,10 @@ bot = telebot.TeleBot(connection_settings['token'])
 
 def reply(message, topic=None, reply_markup=None):
     bot.send_message(message.chat.id, texting.get_replica(topic, message), reply_markup=reply_markup)
+
+
+def log_message(message):
+    print('@{}:'.format(message.from_user.username), message.json)
 
 
 # Handle '/start' and '/help'
@@ -55,7 +67,7 @@ def follow_up(message):
     topic = texting.infer_topic(message)
 
     if topic == 'choose-voice':
-        db.set_voice(message.chat.id, message.text)
+        db.set_voice(message.chat.id, message.text.split()[0])
 
         reply(message, 'changed-voice', texting.get_keyboard(None))
 
@@ -66,14 +78,29 @@ def follow_up(message):
 @bot.message_handler(func=lambda message: True)
 @telebot_fallback()
 def echo_message(message):
+    log_message(message)
     reply(message)
 
 
 @bot.message_handler(content_types=['voice'])
-@telebot_fallback()
 def handle_docs_audio(message):
-    print('DOCS HANDLER')
-    print(message)
+    if message.voice.duration > connection_settings['duration-limit']:
+        reply(message, 'duration-exceeded')
+    else:
+        any_audio_handler(message, message.voice.file_id)
+
+
+@bot.message_handler(content_types=['audio'])
+def handle_docs_audio(message):
+    if message.voice.duration > connection_settings['duration-limit']:
+        reply(message, 'duration-exceeded')
+    else:
+        any_audio_handler(message, message.audio.file_id)
+
+
+@telebot_fallback()
+def any_audio_handler(message, voice):
+    log_message(message)
 
     if not db.check_cooldown(message.chat.id):
         reply(message, 'ddos')
@@ -85,7 +112,7 @@ def handle_docs_audio(message):
     reply(message, 'loading')
 
     try:
-        file_id = message.voice.file_id
+        file_id = voice
         tg_voice = bot.download_file(bot.get_file(file_id).file_path)
     except Exception as e:
         print("Unable to load user's voice.\n", e)
@@ -98,8 +125,8 @@ def handle_docs_audio(message):
         voice_downloaded = tempfile.NamedTemporaryFile(suffix=".ogg")
         voice_downloaded.write(tg_voice)
         voice_downloaded.seek(0)
-        response = requests.post('http://94.130.19.98:5000/api/upload',
-                                 data={"voice": db.get_voice(message.chat.id) or 'Trump'},
+        response = requests.post(connection_settings['endpoints'][db.get_voice(message.chat.id)],
+                                 data={"voice": db.get_voice(message.chat.id) or 'Female'},
                                  files={"file": voice_downloaded})
 
     except Exception as e:
@@ -117,10 +144,10 @@ def handle_docs_audio(message):
             bot.send_voice(message.chat.id, open("modified.wav", 'rb'))
 
         else:
-            print('Unsuccessful request to upload voice, status code:', response.status_code)
-            print('Caused by:', response.request.text[:100000])
             reply(message, 'failed-server-request', texting.get_keyboard(None))
             bot.send_sticker(message.chat.id, texting.get_sticker('trump-ttl'))
+            print('Unsuccessful request to upload voice, status code:', response.status_code)
+            print('Caused by:', response.request)
 
     finally:
         voice_downloaded.close()
@@ -133,4 +160,26 @@ def handle_sticker(message):
     reply(message, 'thank-for-sticker')
 
 
-bot.polling()
+@bot.message_handler(content_types=['document', 'photo', 'video', 'video_note', 'location', 'contact'])
+def handle_docs_audio(message):
+    try:
+        fname = message.document.file_name
+        if fname.endswith('.wav'):
+            if message.voice.duration > connection_settings['duration-limit']:
+                reply(message, 'duration-exceeded')
+            else:
+                any_audio_handler(message, message.document.file_id)
+            return
+    except:
+        pass
+
+    reply(message, 'unknown-datatype')
+
+
+while True:
+    try:
+        bot.polling(none_stop=True)
+
+    except Exception as e:
+        print('Bot shut down and restarted. Cause:\n', e)
+        time.sleep(15)

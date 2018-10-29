@@ -25,6 +25,10 @@ ddos:
   - 'Так, падажжи, слишком много запросов'
   - 'Пожалейте наш сервер, не так быстро!'
 
+duration-exceeded: 'Извините, но запись слишком длинная! Сегодня столько ресурсов у нас нет'
+
+unknown-datatype: 'Не могу работать с такими штуками'
+
 failed-voice-download: >
   Не удалось загрузить голосовушку :(
   Попробуем заново?
@@ -41,6 +45,8 @@ thank-for-sticker: 'Спасибо, схоронил'
 keyboards:
   choose-voice:
     - Trump
+    - Robot
+    - Kate Winston
     - Female
 
 stickers:

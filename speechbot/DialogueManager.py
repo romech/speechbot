@@ -10,9 +10,6 @@ _text_topic = { text: topic for (topic, choices) in dialogues['keyboards'].items
 
 
 def get_replica(topic, message=None):
-    if message:
-        print(message)
-
     if topic in dialogues:
         found = dialogues[topic]
         replica = found if isinstance(found, str) else random.choice(dialogues[topic])
@@ -35,7 +32,7 @@ def get_keyboard(topic):
         return types.ReplyKeyboardRemove()
 
     else:
-        markup = types.ReplyKeyboardMarkup()
+        markup = types.ReplyKeyboardMarkup(row_width=2)
         markup.add(*(types.KeyboardButton(choice) for choice in dialogues['keyboards'][topic]))
 
         return markup
