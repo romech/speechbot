@@ -15,9 +15,7 @@ init:
 install:
 - python -V
 - pip -V
-- pip install --user pyTelegramBotAPI
-- pip install --user requests[socks]
-- pip install --user PyYAML
+- pip install -r requirements.txt
 
 build: off
 
