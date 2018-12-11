@@ -8,15 +8,23 @@ import telebot
 import yaml
 from telebot import apihelper
 
-import speechbot.DialogueManager as texting
-import speechbot.persistent as db
+
+try:
+    connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
+except FileNotFoundError:
+    print('Could not open connection keys')
+    sys.exit(0)
+
+
+from speechbot import DialogueManager as texting
+from speechbot import persistent as db
 from speechbot.utils import *
 
-    
+
 # connect-keys.yaml file
 #
 # connection:
-#   token: 'T0KEИ'
+#   token: 'T0KEN'
 #   proxy:
 #     https: 'socks5://uid:pwd@host:port'
 #
@@ -27,12 +35,6 @@ from speechbot.utils import *
 #
 # duration-limit: 300
 #
-
-try:
-    connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
-except:
-    print('Could not open connection keys')
-    sys.exit(0)
 
 apihelper.proxy = connection_settings['proxy']
 
@@ -142,7 +144,7 @@ def any_audio_handler(message, voice):
 
     else:
         if response.status_code == 200:
-            # bot.send_message(message.chat.id, 'Готово!')
+            # bot.send_message(message.chat.id, 'Done!')
 
             with open("modified.wav", 'wb') as f:
                 f.write(response.content)
