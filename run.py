@@ -1,1 +1,1 @@
-import speechbot.telebot
+import speechbot.bot
