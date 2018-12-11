@@ -1,6 +1,7 @@
 import random
 import tempfile
 import time
+import sys
 
 import requests
 import telebot
@@ -11,8 +12,7 @@ import speechbot.DialogueManager as texting
 import speechbot.persistent as db
 from speechbot.utils import *
 
-connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
-
+    
 # connect-keys.yaml file
 #
 # connection:
@@ -27,6 +27,12 @@ connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
 #
 # duration-limit: 300
 #
+
+try:
+    connection_settings = yaml.load(open('connect-keys.yaml', 'r'))
+except:
+    print('Could not open connection keys')
+    sys.exit(0)
 
 apihelper.proxy = connection_settings['proxy']
 
